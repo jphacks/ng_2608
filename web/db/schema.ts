@@ -1,0 +1,7 @@
+import {integer,sqliteTable,text,primaryKey} from 'drizzle-orm/sqlite-core';
+export const profiles=sqliteTable('profiles',{userId:text('user_id').primaryKey(),nickname:text('nickname').notNull(),age:integer('age').notNull(),purpose:text('purpose').notNull(),tags:text('tags').notNull(),axes:text('axes').notNull(),photoKey:text('photo_key'),preferences:text('preferences').notNull().default('{}'),updatedAt:integer('updated_at').notNull()});
+export const likes=sqliteTable('likes',{source:text('source').notNull(),target:text('target').notNull(),createdAt:integer('created_at').notNull()},t=>[primaryKey({columns:[t.source,t.target]})]);
+export const messages=sqliteTable('messages',{id:text('id').primaryKey(),sender:text('sender').notNull(),recipient:text('recipient').notNull(),body:text('body').notNull(),createdAt:integer('created_at').notNull()});
+export const blocks=sqliteTable('blocks',{source:text('source').notNull(),target:text('target').notNull()},t=>[primaryKey({columns:[t.source,t.target]})]);
+export const reports=sqliteTable('reports',{id:text('id').primaryKey(),source:text('source').notNull(),target:text('target').notNull(),reason:text('reason').notNull(),createdAt:integer('created_at').notNull()});
+export const aiUsage=sqliteTable('ai_usage',{userId:text('user_id').notNull(),day:text('day').notNull(),count:integer('count').notNull()},t=>[primaryKey({columns:[t.userId,t.day]})]);

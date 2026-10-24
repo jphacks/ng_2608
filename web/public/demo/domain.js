@@ -1,0 +1,9 @@
+(function(root){
+const AXES=[{id:'activity',name:'休日の過ごし方',labels:['穏やかに','どちらも','活動的に']},{id:'social',name:'人との過ごし方',labels:['少人数・一人','どちらも','みんなで']},{id:'pace',name:'関係を育てるペース',labels:['じっくり','自然な流れで','積極的に']}];
+const aliases=[['テニス','運動'],['スポーツ','運動'],['散歩','運動'],['コーヒー','カフェ'],['喫茶','カフェ'],['映画鑑賞','映画'],['本','読書'],['自炊','料理']];
+function interests(tags){const result=new Set();const groups=[['運動',/運動|テニス|スポーツ|散歩/],['カフェ',/カフェ|コーヒー|喫茶/],['映画',/映画/],['読書',/読書|本屋/],['料理',/料理|自炊/],['友人との時間',/友達|友人/],['一人の時間',/一人|ひとり/]];for(const tag of tags){let found=false;for(const [name,re] of groups)if(re.test(tag)){result.add(name);found=true}if(!found&&tag.trim())result.add(tag.trim())}return result}
+function match(a,b){const axes=AXES.filter(x=>Number.isInteger(a.axes?.[x.id])&&Number.isInteger(b.axes?.[x.id]));const aa=interests(a.tags||[]),bb=interests(b.tags||[]),common=[...aa].filter(x=>bb.has(x)),union=new Set([...aa,...bb]).size;const axisScore=axes.length?Math.round(axes.reduce((s,x)=>s+(1-Math.abs(a.axes[x.id]-b.axes[x.id])/2),0)/axes.length*45):0;const interestScore=union?Math.round(common.length/union*35):0;const purposeScore=a.purpose===b.purpose?20:0;const enough=axes.length>=2;return {score:enough?axisScore+interestScore+purposeScore:null,axes:axes.length,common,parts:{axis:axisScore,interest:interestScore,purpose:purposeScore},reasons:[...common.map(t=>t+'が共通'),...(purposeScore?['希望する関係が一致']:[]),...(axes.length?[`${axes.length}軸の過ごし方を比較`]:[])]}}
+function typeName(axes){const a=axes?.activity,p=axes?.pace;if(a==null||p==null)return 'まだ決めなくて大丈夫';return `${a===2?'アクティブ':a===0?'穏やか':'バランス'} × ${p===0?'じっくり':p===2?'積極的':'自然体'}`}
+function validAxes(a){return a&&typeof a==='object'&&!Array.isArray(a)&&Object.keys(a).every(k=>AXES.some(x=>x.id===k))&&Object.values(a).every(v=>Number.isInteger(v)&&v>=0&&v<=2)}
+const api={AXES,match,typeName,validAxes};root.KotonohaDomain=api;
+})(globalThis);

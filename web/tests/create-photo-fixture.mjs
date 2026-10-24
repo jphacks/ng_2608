@@ -1,0 +1,3 @@
+import sharp from 'sharp';
+const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700"><rect width="900" height="700" fill="#e3e9d8"/><rect x="560" y="60" width="270" height="120" rx="10" fill="#fcf9ed"/><text x="590" y="125" font-size="36" fill="#355449">SAMPLE STATION</text><circle cx="350" cy="270" r="105" fill="#e7bea0"/><path d="M245 260V210Q350 80 455 210V260Q350 170 245 260" fill="#405444"/><path d="M170 700V560Q350 370 530 560V700" fill="#6c8b78"/><rect x="375" y="520" width="120" height="75" rx="5" fill="#fff"/><text x="390" y="560" font-size="22" fill="#355449">DEMO ID</text></svg>`;
+await sharp(Buffer.from(svg)).png().toFile('tests/photo-fixture.png');console.log('Synthetic photo fixture created');
