@@ -1,4 +1,4 @@
-> 最新のプライバシー確認は [信頼設計](TRUST_BOUNDARIES.md) を参照してください。端末内AIを確認できない場合にルールだけで送信する経路は廃止しました。
+> 最新のプライバシー確認は [信頼設計](TRUST_BOUNDARIES.md) を参照してください。普通の文章はモデル準備不要の標準チェックで送信できます。端末内AIは任意の追加チェックになりました。
 
 # 起動とAPI設定
 
@@ -9,7 +9,7 @@
 | 項目 | 現在の場所・状態 |
 | --- | --- |
 | リポジトリ | `jphacks/ng_2608` |
-| アプリの開発ブランチ | `codex/privacy-review-gate` |
+| アプリの開発ブランチ | `codex/chat-send-humor-fix` |
 | 実装フォルダー | `web/` |
 | 公開サイト | https://kotonoha-first-connect-uchida.seira20071004.chatgpt.site/demo/ |
 | ローカルURL | http://127.0.0.1:5173/demo/index.html |
@@ -22,14 +22,14 @@
 SSH設定済みの場合：
 
 ```sh
-git clone --branch codex/privacy-review-gate git@github.com:jphacks/ng_2608.git
+git clone --branch codex/chat-send-humor-fix git@github.com:jphacks/ng_2608.git
 cd ng_2608/web
 ```
 
 SSH設定がない場合は、代わりにHTTPSで取得できます：
 
 ```sh
-git clone --branch codex/privacy-review-gate https://github.com/jphacks/ng_2608.git
+git clone --branch codex/chat-send-humor-fix https://github.com/jphacks/ng_2608.git
 cd ng_2608/web
 ```
 
@@ -37,7 +37,7 @@ cd ng_2608/web
 
 ```sh
 git fetch origin
-git switch codex/privacy-review-gate
+git switch codex/chat-send-humor-fix
 cd web
 ```
 
@@ -80,7 +80,7 @@ Codexを使う場合は、OpenAI Platformの安全なキー設定フローで、
 | キー未設定・失敗時 | 端末内の言い換えを利用 | 自動チャット補助は端末内処理へ戻る |
 
 キー設定後はローカルサーバーを再起動します。通常のチャットはAIを呼びません。
-AI補助を有効にし、個人情報や強い言葉の候補を検出した加工済みメッセージだけが、自動言い換えの対象です。
+文章補助は「ちょっとボケる」「会話を広げる」を押し、チェック済みの内容を全文確認してから外部AIへ送ります。返答は入力欄へ戻り、相手へ自動送信されません。
 ユーモアのON/OFFは設定画面で切り替えます。外部APIの利用料金はキーの契約先に発生します。
 
 `web/.env.example` は空の変数名を示す見本です。`.env.local` はGitの対象外です。
@@ -100,4 +100,4 @@ KOTONOHA_LOCAL_USER=teammate-test-a npm run dev:local
 
 この環境変数は公開認証の代わりに使わず、ローカル確認に限定します。
 
-現在の自由入力の送信・AI診断には、WebGPU対応ブラウザーと端末内AIの準備が必要です。チャットの会話相性は直近100件の端末内ルール計算で、生成AIによる採点ではありません。
+自由入力は標準チェックで送信できます。端末内AIを追加する場合のみWebGPU対応とモデル準備が必要です。チャットの会話相性は直近100件の端末内ルール計算で、生成AIによる採点ではありません。

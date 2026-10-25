@@ -12,8 +12,8 @@
 
 ## 最新の信頼設計
 
-チャットはルール→端末内AIで確認します。修正や警告があれば入力欄へ戻し、自動送信しません。未準備・失敗・判定不明では送信を止めます。
-[情報の境界・実装・制約](docs/TRUST_BOUNDARIES.md) / [アプリREADMEの最新仕様](web/README.md#最新の信頼設計修正した文章を自動送信しない)
+普通の文はモデル準備不要の標準チェックで送信できます。個人情報の修正時は警告して入力欄へ戻します。端末内AIは任意の追加チェックです。AI追加中の失敗時には停止し、標準への切り替えを案内します。「ちょっとボケる」は大げさな空想とツッコミで言い換えます。
+[情報の境界・実装・制約](docs/TRUST_BOUNDARIES.md) / [アプリREADMEの最新仕様](web/README.md#最新の信頼設計送信を止めるのは修正があるとき)
 
 ## 製品概要
 ### 背景
@@ -37,12 +37,12 @@
 
 ## 共同開発をはじめる
 ```sh
-git clone --branch codex/privacy-review-gate git@github.com:jphacks/ng_2608.git
+git clone --branch codex/chat-send-humor-fix git@github.com:jphacks/ng_2608.git
 cd ng_2608/web
 npm ci
 npm run dev:local
 ```
-現在の実装は `codex/privacy-review-gate` ブランチの `web/` にあります。Node.js 22.13以降が必要です。
+現在の実装は `codex/chat-send-humor-fix` ブランチの `web/` にあります。Node.js 22.13以降が必要です。
 表示された `http://127.0.0.1:5173` を開く。APIキーなしではプロフィール・写真・14問と端末内加工を確認できます。マッチングはAI診断の完了後に利用できます。
 AIを使う場合は、各開発者の安全なキー設定フローで `web/.env.local` を設定する。キーをGitやチャットで共有しない。
 

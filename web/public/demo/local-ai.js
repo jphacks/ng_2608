@@ -24,7 +24,7 @@ function call(type,data,timeout=90000){return new Promise((resolve,reject)=>{
 });}
 export async function check(text,history=[]){
   if(!ready)throw Error('先に「端末内AIを準備する」を押してください。準備前の文章は送信されません。');
-  const result=await call('check',{text,history:history.slice(-4).map(t=>t.slice(0,120))});
+  const result=await call('check',{text,history:history.slice(-4).map(t=>t.slice(0,120))},15000);
   return applyFindings(result,text);
 }
 export async function extract(messages){
