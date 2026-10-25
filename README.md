@@ -4,6 +4,12 @@
 
 [動くアプリ](https://kotonoha-first-connect-uchida.seira20071004.chatgpt.site) / [開発用ソース](web) / [実装と制約](web/README.md)
 
+## 友達のスマホと会話する
+
+各自が別のChatGPTアカウントで登録・写真・診断を完了したら、「さがす」→「友達を招待する」でリンクを共有します。相手が同意するとトークで送受信できます。
+画面を開いている間は約2秒で更新します。NG発言はサーバーでも拒否します。
+[使い方と2利用者の開発手順](web/README.md#スマホ同士で友達と話す)
+
 ## 製品概要
 ### 背景
 出会いの会話では、相手を知りたい一方で、まだ信用できるか分からない相手に大学・生活圏・本名まで伝えたくない葛藤がある。
@@ -26,12 +32,12 @@
 
 ## 共同開発をはじめる
 ```sh
-git clone --branch codex/onboarding-live-match git@github.com:jphacks/ng_2608.git
+git clone --branch codex/friends-chat-guard git@github.com:jphacks/ng_2608.git
 cd ng_2608/web
 npm ci
 npm run dev:local
 ```
-現在の実装は `codex/onboarding-live-match` ブランチの `web/` にあります。Node.js 22.13以降が必要です。
+現在の実装は `codex/friends-chat-guard` ブランチの `web/` にあります。Node.js 22.13以降が必要です。
 表示された `http://127.0.0.1:5173` を開く。APIキーなしではプロフィール・写真・14問と端末内加工を確認できます。マッチングはAI診断の完了後に利用できます。
 AIを使う場合は、各開発者の安全なキー設定フローで `web/.env.local` を設定する。キーをGitやチャットで共有しない。
 

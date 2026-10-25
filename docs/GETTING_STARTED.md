@@ -7,7 +7,7 @@
 | 項目 | 現在の場所・状態 |
 | --- | --- |
 | リポジトリ | `jphacks/ng_2608` |
-| アプリの開発ブランチ | `codex/onboarding-live-match` |
+| アプリの開発ブランチ | `codex/friends-chat-guard` |
 | 実装フォルダー | `web/` |
 | 公開サイト | https://kotonoha-first-connect-uchida.seira20071004.chatgpt.site/demo/ |
 | ローカルURL | http://127.0.0.1:5173/demo/index.html |
@@ -20,14 +20,14 @@
 SSH設定済みの場合：
 
 ```sh
-git clone --branch codex/onboarding-live-match git@github.com:jphacks/ng_2608.git
+git clone --branch codex/friends-chat-guard git@github.com:jphacks/ng_2608.git
 cd ng_2608/web
 ```
 
 SSH設定がない場合は、代わりにHTTPSで取得できます：
 
 ```sh
-git clone --branch codex/onboarding-live-match https://github.com/jphacks/ng_2608.git
+git clone --branch codex/friends-chat-guard https://github.com/jphacks/ng_2608.git
 cd ng_2608/web
 ```
 
@@ -35,7 +35,7 @@ cd ng_2608/web
 
 ```sh
 git fetch origin
-git switch codex/onboarding-live-match
+git switch codex/friends-chat-guard
 cd web
 ```
 

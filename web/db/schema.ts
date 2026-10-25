@@ -10,3 +10,5 @@ export const accountDetails=sqliteTable('account_details',{userId:text('user_id'
 
 export const insightConsents=sqliteTable('insight_consents',{source:text('source').notNull(),target:text('target').notNull(),enabled:integer('enabled').notNull().default(0)},t=>[primaryKey({columns:[t.source,t.target]})]);
 export const insightFacts=sqliteTable('insight_facts',{source:text('source').notNull(),target:text('target').notNull(),dimension:text('dimension').notNull(),valuesJson:text('values_json').notNull(),messageId:text('message_id').notNull(),quote:text('quote').notNull(),updatedAt:integer('updated_at').notNull()},t=>[primaryKey({columns:[t.source,t.target,t.dimension]})]);
+
+export const friendInvites=sqliteTable('friend_invites',{token:text('token').primaryKey(),creator:text('creator').notNull(),recipient:text('recipient'),expiresAt:integer('expires_at').notNull()});

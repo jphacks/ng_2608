@@ -18,7 +18,7 @@ const originalFinish=finishQuestions;finishQuestions=function(){s.questionReview
 // Keep publication preferences and questionnaire answers separate in the existing form.
 const originalRender=render;
 render=function(){
- if(loading||!s.basicsReady){$('#app').innerHTML=`<main class="onboarding-loading"><strong>スキあらば恋<small>隙間ないAI</small></strong><p>${error?esc(error):'あなたの出会いを準備しています…'}</p>${error?'<button id="retryJourney" class="btn">もう一度読み込む</button><a href="/signin-with-chatgpt?return_to=%2Fdemo%2F">ログインする</a>':''}</main>`;if($('#retryJourney'))$('#retryJourney').onclick=load;return;}
+ if(loading||!s.basicsReady){$('#app').innerHTML=`<main class="onboarding-loading"><strong>スキあらば恋<small>隙間ないAI</small></strong><p>${error?esc(error):'あなたの出会いを準備しています…'}</p>${error?'<button id="retryJourney" class="btn">もう一度読み込む</button><a target="_top" href="/signin-with-chatgpt?return_to='+encodeURIComponent(location.pathname+location.search)+'">ログインする</a>':''}</main>`;if($('#retryJourney'))$('#retryJourney').onclick=load;return;}
  const stage=s.onboarding?.next;
  if(!isComplete()&&s.page!=='trust')s.page=nextPage();
  if(first&&isComplete())s.page='discover';
