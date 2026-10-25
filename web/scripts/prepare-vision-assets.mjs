@@ -6,5 +6,6 @@ await copyFile('node_modules/@mediapipe/tasks-vision/vision_bundle.mjs',root+'/f
 for(const [url,file] of [
 ['https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng@1.0.0/4.0.0_best_int/eng.traineddata.gz',root+'/ocr/lang/eng.traineddata.gz'],
 ['https://cdn.jsdelivr.net/npm/@tesseract.js-data/jpn@1.0.0/4.0.0_best_int/jpn.traineddata.gz',root+'/ocr/lang/jpn.traineddata.gz'],
-['https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite',root+'/face/face.tflite']]){try{await stat(file);continue}catch{}const r=await fetch(url);if(!r.ok)throw Error('Asset download failed '+r.status);await writeFile(file,new Uint8Array(await r.arrayBuffer()))}
+['https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite',root+'/face/face.tflite'],
+['https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite',root+'/face/selfie.tflite']]){try{await stat(file);continue}catch{}const r=await fetch(url);if(!r.ok)throw Error('Asset download failed '+r.status);await writeFile(file,new Uint8Array(await r.arrayBuffer()))}
 console.log('Vision assets prepared for same-origin, device-local processing');
