@@ -2,6 +2,9 @@
 
 本人が情報の行き先を選べる、AI対話とマッチングのベータ版です。
 
+初参加の方は [チーム用の起動手順](../docs/GETTING_STARTED.md) と [共同開発ガイド](../CONTRIBUTING.md) を参照してください。
+担当ファイルとデータ境界は [実装図](../docs/ARCHITECTURE.md)、公開方法は [公開と運用](../docs/DEPLOYMENT.md) にまとめています。
+
 ## 実装した体験
 - 基本情報→写真→6分野14問の質問で登録。従来の自由会話は互換用
 - 6分野14問の回答に基づく希望の整理（旧3軸は互換用）
@@ -31,7 +34,8 @@ APIキーは確認済みの`.env.local`から読み込みます。秘密情報�
 
 ## 検証
 `node --test tests/*.test.mjs`
-`node /Users/uchidasora/.codex/plugins/cache/openai-curated-remote/sites/1.1.2/scripts/build-site.mjs`
+`npm run build`
+公開用の梱包は、公開担当者のSites環境の手順に従います。
 スキーマ: db/schema.ts / drizzle/ の移行ファイル
 ローカルの二者間会話・権限テストはメモリ内DBで行います。
 

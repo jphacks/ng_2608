@@ -1,0 +1,97 @@
+# 起動とAPI設定
+
+## 最初に知っておくこと
+
+| 項目 | 現在の場所・状態 |
+| --- | --- |
+| リポジトリ | `jphacks/ng_2608` |
+| アプリの開発ブランチ | `codex/questionnaire-auto-privacy` |
+| 実装フォルダー | `web/` |
+| 公開サイト | https://kotonoha-first-connect-uchida.seira20071004.chatgpt.site/demo/ |
+| ローカルURL | http://127.0.0.1:5173/demo/index.html |
+| Node.js | 22.13以降。CIは24を使用 |
+
+`main` をcloneするだけでは、この開発ブランチのアプリになりません。次のコマンドではブランチも指定しています。
+
+## 1. ソースを取得する
+
+SSH設定済みの場合：
+
+```sh
+git clone --branch codex/questionnaire-auto-privacy git@github.com:jphacks/ng_2608.git
+cd ng_2608/web
+```
+
+SSH設定がない場合は、代わりにHTTPSで取得できます：
+
+```sh
+git clone --branch codex/questionnaire-auto-privacy https://github.com/jphacks/ng_2608.git
+cd ng_2608/web
+```
+
+すでにclone済みなら、リポジトリのルートで：
+
+```sh
+git fetch origin
+git switch codex/questionnaire-auto-privacy
+cd web
+```
+
+## 2. インストールして起動する
+
+```sh
+node --version
+npm ci
+npm run dev:local
+```
+
+http://127.0.0.1:5173/demo/index.html を開きます。終了は起動したターミナルで `Ctrl+C`。
+ローカルのOrigin判定はこのアドレスを前提にしているため、`localhost` ではなく `127.0.0.1` を使ってください。
+
+このプレビューは自分のPCのループバックにだけ待ち受けます。共同利用の公開サーバーではありません。
+ローカルの基本情報・会話は `.sites-runtime/community.sqlite`、加工後の写真は `.sites-runtime/local-photos/` に保存します。
+起動時に現在実装されているSQL移行が適用されます。公開版のデータには接続しません。
+
+## 3. APIキーなしで試せること
+
+- 基本情報→写真→14問の価値観質問の登録フロー。
+- 写真の文字・顔候補の検出と自動マスキング案、手動調整。
+- 質問回答の整理、公開項目の選択、サンプル相手との相性表示。
+- 架空の相手とのデモチャット、端末内の個人情報・強い言葉の言い換え。
+
+サンプル相手はデモであることを画面で区別します。返信は固定のデモ応答で、実在する他人との会話ではありません。
+写真のモデルは同じサイトから読み込みます。初回の読み込みやOCRには時間がかかる場合があります。
+
+## 4. AI補助を使う場合
+
+APIキーはGitHubにも、この案内にも含めていません。各開発者が使用を許可されたキーを安全に設定します。
+Codexを使う場合は、OpenAI Platformの安全なキー設定フローで、保存先を **`web/.env.local`、変数名を `OPENAI_API_KEY`** と指定してください。
+キーそのものをチャット・Issue・PRへ貼る必要はありません。
+
+| 設定 | ローカルプレビュー | 公開版 |
+| --- | --- | --- |
+| `OPENAI_API_KEY` | `web/.env.local` から読み込み | ホスティング側のサーバー秘密変数 |
+| モデル | 現在は `scripts/local-demo.mjs` 内で `gpt-4.1-mini` 固定 | サーバー設定 `OPENAI_MODEL` |
+| AI補助の同意 | 登録フォームの「ことのはサポートを使う」 | 同じ設定を本人用DBに保存 |
+| キー未設定・失敗時 | 端末内の言い換えを利用 | 自動チャット補助は端末内処理へ戻る |
+
+キー設定後はローカルサーバーを再起動します。通常のチャットはAIを呼びません。
+AI補助を有効にし、個人情報や強い言葉の候補を検出した加工済みメッセージだけが、自動言い換えの対象です。
+ユーモアのON/OFFは設定画面で切り替えます。外部APIの利用料金はキーの契約先に発生します。
+
+`web/.env.example` は空の変数名を示す見本です。`.env.local` はGitの対象外です。
+公開版に設定済みのキーはローカルへ自動配布されません。開発者全員で秘密ファイルを回覧しないでください。
+
+## 5. 参加者ごとに作業する
+
+[共同開発ガイド](../CONTRIBUTING.md) に従い、自分のブランチで作業してください。
+複数人の実マッチをローカルで確認するためのブラウザー別ログインは未実装です。
+`KOTONOHA_LOCAL_USER` はサーバー全体のテスト利用者を切り替える設定であり、ブラウザーごとのログインではありません。
+
+合成データだけを使うテスト例：
+
+```sh
+KOTONOHA_LOCAL_USER=teammate-test-a npm run dev:local
+```
+
+この環境変数は公開認証の代わりに使わず、ローカル確認に限定します。

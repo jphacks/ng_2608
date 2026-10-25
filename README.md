@@ -2,7 +2,24 @@
 
 **身元を明かす前に、価値観からつながる。**
 
-[動くアプリ](https://kotonoha-first-connect-uchida.seira20071004.chatgpt.site) / [開発用ソース](web) / [実装と制約](web/README.md)
+[動くアプリ](https://kotonoha-first-connect-uchida.seira20071004.chatgpt.site/demo/) / [開発用ソース](web) / [実装と制約](web/README.md)
+
+## 仲間に共有する入口
+
+**現在の実装は `codex/questionnaire-auto-privacy` ブランチです。`main` にはまだ統合していません。**
+
+このブランチのURLを仲間に共有してください：
+https://github.com/jphacks/ng_2608/tree/codex/questionnaire-auto-privacy
+
+| 知りたいこと | 案内 |
+| --- | --- |
+| clone・起動・APIキーなしのデモ・AI設定 | [起動とAPI設定](docs/GETTING_STARTED.md) |
+| 書き込み権限・作業ブランチ・PRの取り込み先 | [共同開発ガイド](CONTRIBUTING.md) |
+| 現在の機能・担当ファイル・情報の流れ・制約 | [実装と担当ファイル](docs/ARCHITECTURE.md) |
+| テスト・動作確認・よくあるエラー | [検証と困ったとき](docs/TESTING.md) |
+| 公開サイトの更新・秘密変数・運用上の未対応 | [公開と運用](docs/DEPLOYMENT.md) |
+
+GitHubへの保存とSitesへの公開は別です。APIキーや公開サイトの管理権限は、cloneで配布されません。
 
 ## 製品概要
 ### 背景
@@ -30,7 +47,7 @@ npm run dev:local
 ```
 現在の実装は `codex/questionnaire-auto-privacy` ブランチの `web/` にあります。Node.js 22.13以降が必要です。
 表示された `http://127.0.0.1:5173` を開く。APIキーなしでも質問回答・端末内加工・架空の相手とのデモを試せる。
-AIを使う場合は、各開発者の安全なキー設定フローで `web/.env.local` を設定する。キーをGitやチャットで共有しない。
+AIの設定・ローカルと公開版の違いは [起動とAPI設定](docs/GETTING_STARTED.md) を参照。キーをGitやチャットで共有しない。
 
 ```sh
 npm test
