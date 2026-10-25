@@ -3,7 +3,7 @@ import {handleAI} from '../lib/ai/gateway.mjs';
 import {validValues,validValuesOutput} from '../lib/ai/values-contract.mjs';
 import '../public/demo/safety.js';
 const V=globalThis.KotonohaValues,S=globalThis.KotonohaSafety;
-const payload={purpose:'values',version:'values-1',stage:1,selection_answers:{version:2,answers:{holiday:'0'},importance:{}},answers:[{id:1,text:'映画を見て感想を話したいです'}]};
+const payload={purpose:'values',version:'values-2-privacy',stage:1,selection_answers:{version:2,answers:{holiday:'0'},importance:{}},answers:[{id:1,text:'映画を見て感想を話したいです'}]};
 const output={reaction:'映画のあとの感想も、楽しみの一部ですね。',relevant:true,summary:{time:'',pace:'',disagreement:'',bio:''},evidence:[]};
 const req=p=>new Request('https://test.local/api/ai/respond',{method:'POST',headers:{origin:'https://test.local','content-type':'application/json'},body:JSON.stringify({approved:true,payload:p})});
 const config={userId:'test',apiKey:'test-only',model:'test-model'};

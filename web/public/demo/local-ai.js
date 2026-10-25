@@ -1,3 +1,4 @@
+import {applyFindings} from './local-findings.mjs';
 // Model files are downloaded; message text stays inside this browser worker.
 const MODEL='Qwen2.5-1.5B-Instruct-q4f32_1-MLC';
 let worker, ready=false, sequence=0, pending=new Map();
@@ -6,7 +7,7 @@ export async function load(onProgress=()=>{}){
   if(ready)return;
   if(!navigator.gpu)throw Error('このブラウザは端末内AIに必要なWebGPUに対応していません。対応ブラウザ・端末で開いてください。');
   if(!worker){
-    worker=new Worker(new URL('./local-ai-worker.js',import.meta.url),{type:'module'});
+    worker=new Worker(new URL('./local-ai-worker.js?privacy=2',import.meta.url),{type:'module'});
     worker.onmessage=({data})=>{
       if(data.progress){onProgress(data.progress);return;}
       const task=pending.get(data.id);if(!task)return;pending.delete(data.id);
@@ -23,13 +24,8 @@ function call(type,data,timeout=90000){return new Promise((resolve,reject)=>{
 });}
 export async function check(text,history=[]){
   if(!ready)throw Error('先に「端末内AIを準備する」を押してください。準備前の文章は送信されません。');
-  const result=await call('check',{text,history:history.slice(-6).map(t=>t.slice(0,180))});
-  const labels={phone:'電話番号',address:'住所',person_name:'氏名',affiliation:'学校・勤務先',location:'生活圏',schedule:'行動日時',contact:'連絡先',combination:'情報の組み合わせ',private_circumstances:'私的な事情'};
-  if(!result||!Array.isArray(result.findings)||result.findings.length>12||result.findings.some(f=>!f||!Object.hasOwn(labels,f.kind)||typeof f.quote!=='string'||f.quote.length<2||!text.includes(f.quote)||typeof f.replacement!=='string'||!f.replacement.trim()||f.replacement.length>1000))throw Error('端末内AIの検出結果を確認できませんでした。文章は送信していません。');
-  let prepared=text;const risks=[];
-  for(const f of result.findings){prepared=prepared.split(f.quote).join(f.replacement);risks.push(labels[f.kind]);}
-  if(!prepared.trim()||prepared.length>1000)throw Error('端末内AIの修正文を確認できませんでした。文章は送信していません。');
-  return {text:prepared,risks:[...new Set(risks)]};
+  const result=await call('check',{text,history:history.slice(-4).map(t=>t.slice(0,120))});
+  return applyFindings(result,text);
 }
 export async function extract(messages){
   if(!ready)throw Error('端末内AIが未準備です。');

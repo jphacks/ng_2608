@@ -15,8 +15,9 @@ export async function handleAI(request,{apiKey,model,userId,db},fetcher=fetch){
  // This UI requires an explicit action and review for every external-AI request.
  // Keep legacy clients from invoking the former automatic rewriting path.
  if(body?.automatic!==undefined)return json({error:'AUTO_ASSIST_DISABLED'},403);
+ if(body?.payload&&((body.payload.purpose==='values'&&body.payload.version!==globalThis.KotonohaValues.VERSION)||(['question','traits','rewrite'].includes(body.payload.purpose)&&body.payload.version!==P.VERSION)))return json({error:'PRIVACY_CHECK_REQUIRED'},422);
  if(!body||Object.keys(body).sort().join(',')!=='approved,payload'||body.approved!==true||!(validValues(body.payload)||P.validatePayload(body.payload)))return json({error:'INVALID_REQUEST'},400);
- const payload=body.payload;if(payload.answers.some(a=>!globalThis.SukiChatPolicy.check(a.text).allowed))return json({error:'CONTENT_BLOCKED'},422);const privateInfo=db?await db.prepare('SELECT ai_assist,real_name FROM account_details WHERE user_id=?').bind(userId).first():null;if(privateInfo?.real_name){const n=privateInfo.real_name.normalize('NFKC');if(payload.answers.some(a=>[n,n.replace(/\s/g,'')].some(v=>v.length>=2&&a.text.normalize('NFKC').includes(v))))return json({error:'REVIEW_REQUIRED'},422);}
+ const payload=body.payload;if(payload.answers.some(a=>!globalThis.SukiChatPolicy.check(a.text).allowed))return json({error:'CONTENT_BLOCKED'},422);const privateInfo=db?await db.prepare('SELECT ai_assist,real_name FROM account_details WHERE user_id=?').bind(userId).first():null;if(privateInfo?.real_name&&payload.answers.some(a=>globalThis.KotonohaSupport.prepare(a.text,{realName:privateInfo.real_name},false).hasPrivacy))return json({error:'REVIEW_REQUIRED'},422);
  // Re-check the exact approved content. Never silently alter it on the server.
  if(payload.answers.some(a=>globalThis.KotonohaSafety.scan(a.text).found.length))return json({error:'REVIEW_REQUIRED'},422);
  if(payload.purpose==='values'&&db){const stage=await readProgress(db,userId);if(!stage.basics||!stage.photo||!stage.questions)return json({error:'ONBOARDING_REQUIRED'},409);}

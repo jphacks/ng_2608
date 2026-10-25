@@ -10,6 +10,11 @@
 画面を開いている間は約2秒で更新します。NG発言はサーバーでも拒否します。
 [使い方と2利用者の開発手順](web/README.md#スマホ同士で友達と話す)
 
+## 最新の信頼設計
+
+チャットはルール→端末内AIで確認します。修正や警告があれば入力欄へ戻し、自動送信しません。未準備・失敗・判定不明では送信を止めます。
+[情報の境界・実装・制約](docs/TRUST_BOUNDARIES.md) / [アプリREADMEの最新仕様](web/README.md#最新の信頼設計修正した文章を自動送信しない)
+
 ## 製品概要
 ### 背景
 出会いの会話では、相手を知りたい一方で、まだ信用できるか分からない相手に大学・生活圏・本名まで伝えたくない葛藤がある。
@@ -32,12 +37,12 @@
 
 ## 共同開発をはじめる
 ```sh
-git clone --branch codex/friends-chat-guard git@github.com:jphacks/ng_2608.git
+git clone --branch codex/privacy-review-gate git@github.com:jphacks/ng_2608.git
 cd ng_2608/web
 npm ci
 npm run dev:local
 ```
-現在の実装は `codex/friends-chat-guard` ブランチの `web/` にあります。Node.js 22.13以降が必要です。
+現在の実装は `codex/privacy-review-gate` ブランチの `web/` にあります。Node.js 22.13以降が必要です。
 表示された `http://127.0.0.1:5173` を開く。APIキーなしではプロフィール・写真・14問と端末内加工を確認できます。マッチングはAI診断の完了後に利用できます。
 AIを使う場合は、各開発者の安全なキー設定フローで `web/.env.local` を設定する。キーをGitやチャットで共有しない。
 

@@ -1,3 +1,5 @@
+> 最新のプライバシー確認は [信頼設計](TRUST_BOUNDARIES.md) を参照してください。端末内AIを確認できない場合にルールだけで送信する経路は廃止しました。
+
 # 起動とAPI設定
 
 > 最新の登録フローは、プロフィール・写真→14問→3問のAI診断→結果確認→マッチングです。写真とAI診断を飛ばして相手探しには進めません。AI診断にはサーバーのAPI設定が必要です。
@@ -7,7 +9,7 @@
 | 項目 | 現在の場所・状態 |
 | --- | --- |
 | リポジトリ | `jphacks/ng_2608` |
-| アプリの開発ブランチ | `codex/friends-chat-guard` |
+| アプリの開発ブランチ | `codex/privacy-review-gate` |
 | 実装フォルダー | `web/` |
 | 公開サイト | https://kotonoha-first-connect-uchida.seira20071004.chatgpt.site/demo/ |
 | ローカルURL | http://127.0.0.1:5173/demo/index.html |
@@ -20,14 +22,14 @@
 SSH設定済みの場合：
 
 ```sh
-git clone --branch codex/friends-chat-guard git@github.com:jphacks/ng_2608.git
+git clone --branch codex/privacy-review-gate git@github.com:jphacks/ng_2608.git
 cd ng_2608/web
 ```
 
 SSH設定がない場合は、代わりにHTTPSで取得できます：
 
 ```sh
-git clone --branch codex/friends-chat-guard https://github.com/jphacks/ng_2608.git
+git clone --branch codex/privacy-review-gate https://github.com/jphacks/ng_2608.git
 cd ng_2608/web
 ```
 
@@ -35,7 +37,7 @@ cd ng_2608/web
 
 ```sh
 git fetch origin
-git switch codex/friends-chat-guard
+git switch codex/privacy-review-gate
 cd web
 ```
 
@@ -98,4 +100,4 @@ KOTONOHA_LOCAL_USER=teammate-test-a npm run dev:local
 
 この環境変数は公開認証の代わりに使わず、ローカル確認に限定します。
 
-AI診断はWebGPUの準備なしで進められます。チャットの会話相性は直近100件の端末内ルール計算で、生成AIによる採点ではありません。
+現在の自由入力の送信・AI診断には、WebGPU対応ブラウザーと端末内AIの準備が必要です。チャットの会話相性は直近100件の端末内ルール計算で、生成AIによる採点ではありません。
