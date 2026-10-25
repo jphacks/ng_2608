@@ -15,6 +15,13 @@
       "when": 1792851645463,
       "tag": "0001_open_patch",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792854669077,
+      "tag": "0002_normal_captain_marvel",
+      "breakpoints": true
     }
   ]
 }

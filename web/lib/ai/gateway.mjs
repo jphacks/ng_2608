@@ -1,4 +1,4 @@
-import '../../public/demo/privacy.js';
+import '../../public/demo/privacy.js';import '../../public/demo/support.js';
 const P=globalThis.KotonohaPrivacy;
 export function json(body,status=200){return Response.json(body,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}})}
 async function boundedJson(request){const reader=request.body?.getReader();if(!reader)throw Error();let size=0;const chunks=[];for(;;){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>16000){await reader.cancel();throw Error()}chunks.push(value)}const buf=new Uint8Array(size);let pos=0;for(const c of chunks){buf.set(c,pos);pos+=c.length}return JSON.parse(new TextDecoder().decode(buf))}
@@ -8,8 +8,8 @@ export async function handleAI(request,{apiKey,model,userId,db},fetcher=fetch){
  const origin=request.headers.get('origin');if(!origin||origin!==new URL(request.url).origin)return json({error:'ORIGIN_REJECTED'},403);
  if(!request.headers.get('content-type')?.startsWith('application/json'))return json({error:'INVALID_CONTENT_TYPE'},415);
  let body;try{body=await boundedJson(request)}catch{return json({error:'INVALID_REQUEST'},400)}
- if(!body||Object.keys(body).sort().join(',')!=='approved,payload'||body.approved!==true||!P.validatePayload(body.payload))return json({error:'INVALID_REQUEST'},400);
- const payload=body.payload;
+ if(!body||!['approved,payload','approved,automatic,payload'].includes(Object.keys(body).sort().join(','))||body.approved!==true||!P.validatePayload(body.payload))return json({error:'INVALID_REQUEST'},400);
+ const payload=body.payload;const privateInfo=db?await db.prepare('SELECT ai_assist,real_name FROM account_details WHERE user_id=?').bind(userId).first():null;if(body.automatic!==undefined){if(body.automatic!==true||!privateInfo?.ai_assist)return json({error:'AUTO_ASSIST_DISABLED'},403);}if(privateInfo?.real_name){const n=privateInfo.real_name.normalize('NFKC');if(payload.answers.some(a=>[n,n.replace(/\s/g,'')].some(v=>v.length>=2&&a.text.normalize('NFKC').includes(v))))return json({error:'REVIEW_REQUIRED'},422);}
  // Re-check the exact approved content. Never silently alter it on the server.
  if(payload.answers.some(a=>P.scan(a.text).found.length))return json({error:'REVIEW_REQUIRED'},422);
  if(!apiKey||!model)return json({error:'AI_NOT_CONFIGURED'},503);
@@ -22,7 +22,7 @@ export async function handleAI(request,{apiKey,model,userId,db},fetcher=fetch){
   const content=(result.output||[]).filter(x=>x.type==='message').flatMap(x=>x.content||[]);
   if(content.some(x=>x.type==='refusal'))return json({error:'OUTPUT_REJECTED'},502);
   const text=content.filter(x=>x.type==='output_text').map(x=>x.text).join('');let output;try{output=JSON.parse(text)}catch{return json({error:'OUTPUT_REJECTED'},502)}
-  if(!P.validateOutput(output,payload))return json({error:'OUTPUT_REJECTED'},502);
+  if(!P.validateOutput(output,payload)||(payload.purpose==='rewrite'&&!globalThis.KotonohaSupport.outputAllowed(output.text)))return json({error:'OUTPUT_REJECTED'},502);
   return json({output});
  }catch{return json({error:'AI_UNAVAILABLE'},502)}finally{clearTimeout(timer)}
 }

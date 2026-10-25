@@ -1,0 +1,15 @@
+(function(root){
+const P=root.KotonohaPrivacy;
+const incomes=[['','回答しない'],['under200','200万円未満'],['200-400','200〜400万円'],['400-600','400〜600万円'],['600-800','600〜800万円'],['800-1000','800〜1,000万円'],['over1000','1,000万円以上']];
+const occupations=['','学生','会社員','公務員','自営業・フリーランス','その他'];
+const regions=['','北海道・東北','関東','中部','近畿','中国・四国','九州・沖縄','海外'];
+function validBasics(b){return b&&Object.keys(b).sort().join(',')==='age,aiAssist,incomePublic,incomeRange,name,occupation,purpose,realName,region'&&typeof b.realName==='string'&&b.realName.trim().length>=2&&b.realName.length<=60&&typeof b.name==='string'&&b.name.trim().length>=1&&b.name.length<=20&&b.name.replace(/\s/g,'')!==b.realName.replace(/\s/g,'')&&!P.scan(b.name).found.length&&Number.isInteger(b.age)&&b.age>=18&&b.age<=99&&incomes.some(x=>x[0]===b.incomeRange)&&occupations.includes(b.occupation)&&regions.includes(b.region)&&typeof b.incomePublic==='boolean'&&typeof b.aiAssist==='boolean'&&['ゆっくり話したい','趣味を共有したい','まずは友達から'].includes(b.purpose)}
+const toneRules=[[/死ね|しね[よ！!。]?|殺す|ころす/g,'今は強い怒りを感じているので、少し時間を置きたい'],[/お前(?:は|って)?(?:バカ|馬鹿|アホ)(?:じゃないの|なの|だろ|だな|だね|だ|です)?|(?:バカ(?!ンス)|馬鹿|アホ)(?:じゃないの|なの|だろ|だな|だね|だ|です)?/g,'その考えは、私とは少し違うみたい'],[/うざい|ウザい|キモい|きもい|気持ち悪い|ブス/g,'今は少し距離を置きたい'],[/消えろ|黙れ|だまれ|ふざけんな/g,'いったん落ち着いてから話したい']];
+function prepare(input,known={},humor=true){let raw=String(input),working=raw.normalize('NFKC');const privateLabels=[];const name=String(known.realName||'').normalize('NFKC').trim();const variants=[name,name.replace(/\s/g,'')].filter(n=>n.length>=2);for(const n of new Set(variants))if(working.includes(n)){working=working.split(n).join('名前はもう少し仲良くなってから');privateLabels.push('本名')}
+working=working.replace(/(?:年収|給料|給与)(?:は|が|[:：])?\s*[一二三四五六七八九十百千万億0-9][一二三四五六七八九十百千万億0-9,.〜~～\-]*\s*(?:万|千)?円?(?:くらい|程度)?(?:です)?/g,()=>{privateLabels.push('収入');return '収入の詳しい話は、仲良くなってから'});
+const masked=P.scan(working);working=masked.text.replace(/名前はもう少し仲良くなってからです/g,'名前は、仲良くなってから話すね');let tone=false;for(const [re,replacement] of toneRules){working=working.replace(re,()=>{tone=true;return replacement})}if(tone&&humor){working=working.replace(/いったん落ち着いてから話したい|今は強い怒りを感じているので、少し時間を置きたい/g,'気持ちが熱くなっているので、いったんクールダウンするね');}
+const labels=[...new Set([...privateLabels,...masked.labels,...(tone?['強い言葉']:[])])];return{text:labels.length?working:raw,labels,changed:labels.length>0&&working!==raw,hasPrivacy:privateLabels.length+masked.labels.length>0,hasTone:tone};}
+function outputAllowed(text){return typeof text==='string'&&text.trim().length>0&&text.length<=1000&&!P.scan(text).found.length&&!toneRules.some(([re])=>{re.lastIndex=0;return re.test(text)})}
+function photoIssues(result){const boxes=result?.boxes||[];return{attention:!!(result?.failures?.length||result?.faces!==1||boxes.some(b=>b.enabled)),textCount:boxes.filter(b=>b.kind==='text').length,extraFaces:Math.max(0,(result?.faces||0)-1),noFace:result?.faces===0,failed:!!result?.failures?.length}}
+root.KotonohaSupport={incomes,occupations,regions,validBasics,prepare,outputAllowed,photoIssues};
+})(globalThis);
