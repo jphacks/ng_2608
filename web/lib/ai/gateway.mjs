@@ -1,3 +1,4 @@
+import {readProgress} from '../onboarding.mjs';
 import '../../public/demo/privacy.js';import '../../public/demo/support.js';
 import '../../public/demo/safety.js';
 import {validValues,valuesInstructions,valuesSchema,validValuesOutput} from './values-contract.mjs';
@@ -17,6 +18,7 @@ export async function handleAI(request,{apiKey,model,userId,db},fetcher=fetch){
  const payload=body.payload;const privateInfo=db?await db.prepare('SELECT ai_assist,real_name FROM account_details WHERE user_id=?').bind(userId).first():null;if(privateInfo?.real_name){const n=privateInfo.real_name.normalize('NFKC');if(payload.answers.some(a=>[n,n.replace(/\s/g,'')].some(v=>v.length>=2&&a.text.normalize('NFKC').includes(v))))return json({error:'REVIEW_REQUIRED'},422);}
  // Re-check the exact approved content. Never silently alter it on the server.
  if(payload.answers.some(a=>globalThis.KotonohaSafety.scan(a.text).found.length))return json({error:'REVIEW_REQUIRED'},422);
+ if(payload.purpose==='values'&&db){const stage=await readProgress(db,userId);if(!stage.basics||!stage.photo||!stage.questions)return json({error:'ONBOARDING_REQUIRED'},409);}
  if(!apiKey||!model)return json({error:'AI_NOT_CONFIGURED'},503);
  if(db){const day=new Date().toISOString().slice(0,10);const used=await db.prepare('INSERT INTO ai_usage (user_id, day, count) VALUES (?, ?, 1) ON CONFLICT(user_id, day) DO UPDATE SET count=count+1 WHERE count<60 RETURNING count').bind(userId,day).first();if(!used)return json({error:'DAILY_LIMIT'},429);}
  const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),25000);
@@ -28,6 +30,7 @@ export async function handleAI(request,{apiKey,model,userId,db},fetcher=fetch){
   if(content.some(x=>x.type==='refusal'))return json({error:'OUTPUT_REJECTED'},502);
   const text=content.filter(x=>x.type==='output_text').map(x=>x.text).join('');let output;try{output=JSON.parse(text)}catch{return json({error:'OUTPUT_REJECTED'},502)}
   if(!(payload.purpose==='values'?validValuesOutput(output,payload):P.validateOutput(output,payload))||(payload.purpose==='rewrite'&&!globalThis.KotonohaSupport.outputAllowed(output.text)))return json({error:'OUTPUT_REJECTED'},502);
+  if(payload.purpose==='values'&&payload.stage===3&&output.relevant&&db)await db.prepare('UPDATE account_details SET ai_diagnosed_at=?,ai_diagnosis=?,ai_confirmed=0 WHERE user_id=?').bind(Date.now(),JSON.stringify(output.summary),userId).run();
   return json({output});
  }catch{return json({error:'AI_UNAVAILABLE'},502)}finally{clearTimeout(timer)}
 }

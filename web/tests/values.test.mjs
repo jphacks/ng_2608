@@ -17,3 +17,9 @@ test('未回答は推測せず、全スキップ時も情報を補完しない',
 test('送信前のルール＋ローカルAIは変更と残存候補を区別し、失敗を送信許可にしない',async()=>{const check=async text=>({text,risks:[]});const normal=await S.review('映画が好きです。',[],{check});assert.equal(normal.changed,false);const masked=await S.review('電話090-1234-5678です',[],{check});assert(masked.changed);assert(!masked.text.includes('1234'));await assert.rejects(()=>S.review('こんにちは',[],{check:async()=>{throw Error('not ready');}}));const again=await S.review('映画が好き',[],{check:async()=>({text:'東京大学です',risks:['所属']})});assert(again.residual);assert(!again.text.includes('東京'));});
 test('別々の発言の所属・生活圏・習慣を組み合わせて注意を表示',()=>{assert(S.combinations(['駅の近くに住んでいる','会社で練習している','毎週火曜に集まる']).warning);assert(!S.combinations(['映画が好き','感想を話したい']).warning);});
 test('会話を広げる操作は別スタイルとして検証し、質問追加の範囲を限定',()=>{const P=globalThis.KotonohaPrivacy,p={version:P.VERSION,purpose:'rewrite',intent:'ゆっくり話したい',style:'expand',answers:[{id:1,text:'映画が好きです'}]};assert(P.validatePayload(p));assert(P.instructionsFor(p).includes('質問を一つだけ'));assert(P.instructionsFor(p).includes('健康、経済状況を尋ねない'));});
+
+test('途中の応答に実在する引用が付いても進行し、架空引用と途中まとめは引き続き拒否',()=>{const grounded={...output,evidence:[{field:'time',sourceId:'answer:1',quote:'映画を見て感想を話したい'}]};assert(validValuesOutput(grounded,payload));assert(!validValuesOutput({...grounded,evidence:[{field:'time',sourceId:'answer:1',quote:'旅行が好き'}]},payload));assert(!validValuesOutput({...grounded,summary:{...output.summary,time:'映画が好き'}},payload));});
+
+test('普通の文章の全角記号や絵文字を変えず、不要な修正通知の原因にしない',()=>{const text='こんにちは！今日もおつかれさま♡';assert.equal(S.scan(text).text,text);assert.equal(S.scan(text).found.length,0);});
+
+test('氏名の一般化結果を再び氏名と誤検出せず、自動加工が一度で収束する',()=>{const original='名前は山田花子です。';const masked=S.scan(original);assert(masked.found.length);assert.equal(S.scan(masked.text).found.length,0);assert.equal(S.scan('名前はもう少し仲良くなってから').found.length,0);});

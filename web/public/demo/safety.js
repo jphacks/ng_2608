@@ -7,7 +7,7 @@
   ['行動日時',/(?:明日|今日|今夜|来週[月火水木金土日]曜(?:日)?|\d{1,2}月\d{1,2}日)(?:の|は)?(?:午前|午後)?\d{1,2}(?:時(?:\d{1,2}分)?|:\d{2})/g,'都合のよい時間'],
   ['氏名',/(?:本名|氏名|名前)(?:は|[:：])\s*[^\s。、！？!?,]{2,25}?(?=です|といいます|[\s。、！？!?,]|$)/g,'名前は非公開']
  ];
- function scan(raw){const first=P.scan(raw);let text=first.text;const found=[...first.found];for(const[label,re,replacement]of rules)text=text.replace(re,original=>{found.push({label,original,replacement});return replacement;});return{text,found,labels:[...new Set(found.map(x=>x.label))]};}
+ function scan(raw){const first=P.scan(raw);let text=first.text;const found=[...first.found];for(const[label,re,replacement]of rules)text=text.replace(re,original=>{if(label==='氏名'&&/^(?:本名|氏名|名前)(?:は|[:：])\s*(?:非公開|秘密|内緒|(?:もう少し)?仲良くなってから(?:話すね|教えるね|話すよ|教えるよ|ね)?)$/.test(original))return original;found.push({label,original,replacement});return replacement;});return{text:found.length?text:String(raw),found,labels:[...new Set(found.map(x=>x.label))]};}
  function combinations(messages,draft=''){
   const entries=messages.map(m=>typeof m==='string'?m:m.text);if(draft)entries.push(draft);
   const categories=[['生活圏',/駅|沿線|近所|徒歩|地元|住ん|住ま|近く/],['所属・活動',/学校|大学|会社|仕事|勤務|部活|練習|サークル|学年/],['時間・習慣',/毎週|毎朝|いつも|曜日|[月火水木金土日]曜|\d{1,2}時|定期的/],['場所の特徴',/唯一|一軒|隣|向かい|目の前|赤い|看板|商店街/]];
