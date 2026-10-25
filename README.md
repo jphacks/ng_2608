@@ -23,11 +23,12 @@
 
 ## 共同開発をはじめる
 ```sh
-git clone git@github.com:jphacks/ng_2608.git
+git clone --branch codex/questionnaire-auto-privacy git@github.com:jphacks/ng_2608.git
 cd ng_2608/web
 npm ci
 npm run dev:local
 ```
+現在の実装は `codex/questionnaire-auto-privacy` ブランチの `web/` にあります。Node.js 22.13以降が必要です。
 表示された `http://127.0.0.1:5173` を開く。APIキーなしでも質問回答・端末内加工・架空の相手とのデモを試せる。
 AIを使う場合は、各開発者の安全なキー設定フローで `web/.env.local` を設定する。キーをGitやチャットで共有しない。
 
